@@ -28,6 +28,9 @@ const imagekit = new ImageKit({
   urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT
 });
 
+app.get('/', (req, res) => {
+  res.send('Backend server is running!');
+});
 const upload = multer({ storage: multer.memoryStorage() });
 
 // Seed initial users if none exist
