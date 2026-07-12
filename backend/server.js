@@ -121,7 +121,7 @@ app.post('/api/upload', auth, upload.single('image'), async (req, res) => {
     }
 
     const response = await imagekit.upload({
-      file: req.file.buffer, 
+      file: req.file.buffer.toString('base64'), 
       fileName: `task_${Date.now()}_${originalName.replace(/[^a-zA-Z0-9.]/g, '')}${ext}`,
       folder: '/office_tasks'
     });

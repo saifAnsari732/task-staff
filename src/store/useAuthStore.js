@@ -41,11 +41,17 @@ const useAuthStore = create((set) => ({
       const token = useAuthStore.getState().token;
       
       let formData = new FormData();
-      const filename = uri.split('/').pop();
+      const filename = uri.split('/').pop() || 'profile.jpg';
       const match = /\.(\w+)$/.exec(filename);
-      const type = match ? `image/${match[1]}` : `image`;
+      const type = match ? `image/${match[1]}` : `image/jpeg`;
       
-      formData.append('image', { uri, name: filename, type });
+      if (typeof window !== 'undefined' && window.document) {
+        const res = await fetch(uri);
+        const blob = await res.blob();
+        formData.append('image', blob, filename);
+      } else {
+        formData.append('image', { uri, name: filename, type });
+      }
       
       const response = await axios.put(`${API_URL}/users/profile-pic`, formData, {
         headers: { 
