@@ -43,7 +43,7 @@ export default function ManageEmployeesScreen() {
       const targetEmails = [
         'telecaller@company.com',
         'video@company.com',
-        'social@company.com',
+        'socialmedia@kisan.com',
         'developer@company.com'
       ];
       

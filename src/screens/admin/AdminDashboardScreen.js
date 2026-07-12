@@ -28,7 +28,7 @@ export default function AdminDashboardScreen({ navigation }) {
       const targetEmails = [
         'telecaller@company.com',
         'video@company.com',
-        'social@company.com',
+        'socialmedia@kisan.com',
         'developer@company.com'
       ];
       
