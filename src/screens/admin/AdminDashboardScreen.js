@@ -23,7 +23,18 @@ export default function AdminDashboardScreen({ navigation }) {
       const response = await axios.get(`${API_URL}/users`, {
         headers: { 'x-auth-token': token }
       });
-      setEmployees(response.data);
+      
+      // Filter out admins and keep only 1 user per role to match the 4 specific users
+      const staffList = response.data.filter(u => u.role !== 'admin');
+      const uniqueByRole = {};
+      staffList.forEach(user => {
+         // Keep the latest or first found user for each role
+         if (!uniqueByRole[user.role]) {
+             uniqueByRole[user.role] = user;
+         }
+      });
+      
+      setEmployees(Object.values(uniqueByRole));
     } catch (error) {
       console.error('Error fetching employees:', error);
     }
@@ -122,7 +133,7 @@ export default function AdminDashboardScreen({ navigation }) {
       </View>
 
       {/* Recent Activity */}
-      <View style={styles.recentActivityCard}>
+      <View style={styles.recentActivityContainer}>
         <View style={styles.recentHeader}>
           <Text style={styles.recentTitle}>Recent Activity</Text>
           <Text style={styles.viewAll}>View All</Text>
@@ -138,10 +149,9 @@ export default function AdminDashboardScreen({ navigation }) {
             const roleTheme = colors.roles[task.role] || { bg: colors.primary, text: '#fff' };
             
             return (
-              <View key={task._id || index} style={{marginBottom: 20}}>
-                <View style={styles.activityItem}>
+                <View key={task._id || index} style={[styles.activityItemBox, { borderLeftColor: roleTheme.text }]}>
                   {task.user?.profilePic ? (
-                    <Image source={{ uri: task.user.profilePic }} style={[styles.activityAvatar, {borderColor: roleTheme.bg, borderWidth: 2}]} />
+                    <Image source={{ uri: task.user.profilePic }} style={styles.activityAvatar} />
                   ) : (
                     <View style={[styles.activityAvatar, {backgroundColor: roleTheme.bg}]}>
                       <Text style={[styles.activityAvatarText, {color: roleTheme.text}]}>{userInitial}</Text>
@@ -200,7 +210,6 @@ export default function AdminDashboardScreen({ navigation }) {
                     )}
                   </View>
                 </View>
-              </View>
             )
           })
         )}
@@ -245,15 +254,29 @@ const styles = StyleSheet.create({
   warningRow: { flexDirection: 'row', alignItems: 'center', marginTop: 12, gap: 4 },
   warningText: { fontSize: 11, color: colors.error, fontWeight: '600' },
 
-  recentActivityCard: { backgroundColor: colors.card, padding: 20, borderRadius: 12, borderWidth: 1, borderColor: colors.border, marginTop: 8 },
-  recentHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  recentActivityContainer: { marginTop: 16 },
+  recentHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
   recentTitle: { fontSize: 16, fontWeight: '700', color: colors.text },
   viewAll: { fontSize: 12, fontWeight: '600', color: colors.primary },
   
-  activityItem: { flexDirection: 'row', gap: 12, alignItems: 'center' },
+  activityItemBox: {
+    backgroundColor: colors.card,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    borderLeftWidth: 5,
+  },
   activityAvatar: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.border },
   activityAvatarText: { color: '#fff', fontSize: 14, fontWeight: '700' },
-  activityContent: { flex: 1, paddingBottom: 4 },
+  activityContent: { flex: 1, paddingBottom: 0 },
   activityText: { fontSize: 13, color: colors.textLight, lineHeight: 18 },
   boldText: { fontWeight: '700', color: colors.text },
   linkText: { color: colors.primary },

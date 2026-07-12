@@ -39,7 +39,16 @@ export default function ManageEmployeesScreen() {
       const response = await axios.get(`${API_URL}/users`, {
         headers: { 'x-auth-token': token }
       });
-      setEmployees(response.data);
+      
+      const staffList = response.data.filter(u => u.role !== 'admin');
+      const uniqueByRole = {};
+      staffList.forEach(user => {
+         if (!uniqueByRole[user.role]) {
+             uniqueByRole[user.role] = user;
+         }
+      });
+      
+      setEmployees(Object.values(uniqueByRole));
     } catch (error) {
       console.error(error);
       Alert.alert('Error', 'Failed to fetch employees');
