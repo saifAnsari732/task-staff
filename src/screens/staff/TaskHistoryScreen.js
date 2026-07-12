@@ -92,16 +92,19 @@ export default function TaskHistoryScreen() {
                     <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>Content: {item.details.contentType}</Text></View>
                   )}
                   {item.details?.youtubeCount !== undefined && (
-                    <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>YouTube: {item.details.youtubeCount}</Text></View>
+                    <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>YouTube: {item.details.youtubeCount} {item.details.youtubeChannel ? `(${item.details.youtubeChannel})` : ''}</Text></View>
                   )}
                   {item.details?.facebookCount !== undefined && (
-                    <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>Facebook: {item.details.facebookCount}</Text></View>
+                    <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>Facebook: {item.details.facebookCount} {item.details.facebookChannel ? `(${item.details.facebookChannel})` : ''}</Text></View>
                   )}
                   {item.details?.instagramCount !== undefined && (
-                    <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>Instagram: {item.details.instagramCount}</Text></View>
+                    <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>Instagram: {item.details.instagramCount} {item.details.instagramChannel ? `(${item.details.instagramChannel})` : ''}</Text></View>
                   )}
                   {item.details?.linkedinCount !== undefined && (
-                    <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>LinkedIn: {item.details.linkedinCount}</Text></View>
+                    <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>LinkedIn: {item.details.linkedinCount} {item.details.linkedinChannel ? `(${item.details.linkedinChannel})` : ''}</Text></View>
+                  )}
+                  {item.details?.pinterestCount !== undefined && (
+                    <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>Pinterest: {item.details.pinterestCount} {item.details.pinterestChannel ? `(${item.details.pinterestChannel})` : ''}</Text></View>
                   )}
                   {item.details?.postLink && (
                     <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg, width: '100%'}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]} numberOfLines={1}>Link: {item.details.postLink}</Text></View>

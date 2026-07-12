@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { colors } from '../theme/colors';
 
@@ -64,6 +64,29 @@ export default function DynamicTaskForm({ schema, onSubmit, isLoading }) {
                   </Text>
                 </TouchableOpacity>
               ))}
+            </View>
+          ) : field.type === 'platform-metric' ? (
+            <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap: 8}}>
+                {field.options.map(opt => (
+                  <TouchableOpacity 
+                    key={opt}
+                    style={[styles.selectOption, formData[`${field.name}Channel`] === opt && styles.selectOptionActive, {paddingVertical: 8, paddingHorizontal: 12}]}
+                    onPress={() => handleChange(`${field.name}Channel`, opt)}
+                  >
+                    <Text style={[styles.selectOptionText, formData[`${field.name}Channel`] === opt && styles.selectOptionTextActive, {fontSize: 12}]}>
+                      {opt}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+              <TextInput
+                style={[styles.input, {width: 80, height: 40, padding: 8, textAlign: 'center'}]}
+                value={formData[`${field.name}Count`] || ''}
+                onChangeText={(val) => handleChange(`${field.name}Count`, val)}
+                keyboardType="numeric"
+                placeholder="Count"
+              />
             </View>
           ) : field.type === 'image' ? (
             <View>

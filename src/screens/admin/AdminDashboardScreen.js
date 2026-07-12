@@ -186,16 +186,19 @@ export default function AdminDashboardScreen({ navigation }) {
                         <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>Content: {task.details.contentType}</Text></View>
                       )}
                       {task.details?.youtubeCount !== undefined && (
-                        <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>YouTube: {task.details.youtubeCount}</Text></View>
+                        <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>YouTube: {task.details.youtubeCount} {task.details.youtubeChannel ? `(${task.details.youtubeChannel})` : ''}</Text></View>
                       )}
                       {task.details?.facebookCount !== undefined && (
-                        <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>Facebook: {task.details.facebookCount}</Text></View>
+                        <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>Facebook: {task.details.facebookCount} {task.details.facebookChannel ? `(${task.details.facebookChannel})` : ''}</Text></View>
                       )}
                       {task.details?.instagramCount !== undefined && (
-                        <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>Instagram: {task.details.instagramCount}</Text></View>
+                        <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>Instagram: {task.details.instagramCount} {task.details.instagramChannel ? `(${task.details.instagramChannel})` : ''}</Text></View>
                       )}
                       {task.details?.linkedinCount !== undefined && (
-                        <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>LinkedIn: {task.details.linkedinCount}</Text></View>
+                        <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>LinkedIn: {task.details.linkedinCount} {task.details.linkedinChannel ? `(${task.details.linkedinChannel})` : ''}</Text></View>
+                      )}
+                      {task.details?.pinterestCount !== undefined && (
+                        <View style={[styles.detailItemBox, {backgroundColor: roleTheme.bg}]}><Text style={[styles.detailItemText, {color: roleTheme.text}]}>Pinterest: {task.details.pinterestCount} {task.details.pinterestChannel ? `(${task.details.pinterestChannel})` : ''}</Text></View>
                       )}
                       
                       {task.details?.description && (
