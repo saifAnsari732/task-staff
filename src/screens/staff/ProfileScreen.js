@@ -1,12 +1,28 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ActivityIndicator, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ActivityIndicator, Alert, Modal, Linking } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import useAuthStore from '../../store/useAuthStore';
+import useTaskStore from '../../store/useTaskStore';
 import { colors } from '../../theme/colors';
 
 export default function ProfileScreen() {
-  const { user, role, logout } = useAuthStore();
+  const { user, role, logout, fetchProfile, isLoading } = useAuthStore();
+  const { tasks, fetchTasks } = useTaskStore();
+  
+  const [accountModal, setAccountModal] = useState(false);
+  const [notifyModal, setNotifyModal] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    fetchTasks();
+    const interval = setInterval(() => {
+      fetchTasks();
+    }, 15000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const unreadTasks = tasks.filter(t => t.details?.assignedByAdmin && t.details?.status === 'Pending');
 
   const getRoleTheme = () => {
     if (role === 'admin') return colors.roles.admin;
@@ -38,23 +54,33 @@ export default function ProfileScreen() {
     }
   };
 
-  const renderOption = (icon, title, subtitle) => (
-    <TouchableOpacity style={styles.optionRow}>
+  const renderOption = (icon, title, subtitle, onPress, badgeCount) => (
+    <TouchableOpacity style={styles.optionRow} onPress={onPress}>
       <View style={[styles.iconWrapper, { backgroundColor: theme.bg }]}>
         <Feather name={icon} size={18} color={theme.text} />
       </View>
       <View style={styles.optionTextContainer}>
-        <Text style={styles.optionTitle}>{title}</Text>
+        <Text style={[styles.optionTitle, isDarkMode && {color: '#FFF'}]}>{title}</Text>
         {subtitle && <Text style={styles.optionSubtitle}>{subtitle}</Text>}
       </View>
+      {badgeCount > 0 && (
+        <View style={{backgroundColor: colors.error, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 10, marginRight: 10}}>
+          <Text style={{color: '#fff', fontSize: 12, fontWeight: 'bold'}}>{badgeCount}</Text>
+        </View>
+      )}
       <Feather name="chevron-right" size={20} color={colors.textLight} />
     </TouchableOpacity>
   );
 
+  const dynamicContainer = [styles.container, isDarkMode && { backgroundColor: '#121212' }];
+  const dynamicCard = [styles.card, isDarkMode && { backgroundColor: '#1E1E1E', borderColor: '#333' }];
+  const dynamicText = isDarkMode ? { color: '#FFF' } : { color: colors.text };
+  const dynamicHeader = [styles.header, isDarkMode && { backgroundColor: '#1E1E1E', borderBottomColor: '#333' }];
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingTop: 40, paddingBottom: 90 }} showsVerticalScrollIndicator={false}>
+    <ScrollView style={dynamicContainer} contentContainerStyle={{ paddingTop: 40, paddingBottom: 90 }} showsVerticalScrollIndicator={false}>
       {/* Header Profile Section */}
-      <View style={styles.header}>
+      <View style={dynamicHeader}>
         <TouchableOpacity style={styles.avatarContainer} onPress={handleImagePick}>
           {useAuthStore.getState().isLoading ? (
             <View style={[styles.avatar, { backgroundColor: theme.text, opacity: 0.7 }]}>
@@ -72,7 +98,7 @@ export default function ProfileScreen() {
             <Feather name="camera" size={12} color="#fff" />
           </View>
         </TouchableOpacity>
-        <Text style={styles.name}>{user?.email?.split('@')[0] || 'User'}</Text>
+        <Text style={[styles.name, dynamicText]}>{user?.name || user?.email?.split('@')[0] || 'User'}</Text>
         <Text style={styles.email}>{user?.email}</Text>
         <View style={[styles.roleBadge, { backgroundColor: theme.bg }]}>
           <Text style={[styles.roleBadgeText, { color: theme.text }]}>
@@ -83,21 +109,22 @@ export default function ProfileScreen() {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>General Settings</Text>
-        <View style={styles.card}>
-          {renderOption('user', 'Account Details', 'Update your personal info')}
-          <View style={styles.divider} />
-          {renderOption('bell', 'Notifications', 'Manage alerts & reminders')}
-          <View style={styles.divider} />
-          {renderOption('shield', 'Privacy & Security', 'Password and authentication')}
+        <View style={dynamicCard}>
+          {renderOption('user', 'Account Details', 'Update your personal info', async () => {
+            setAccountModal(true);
+            await fetchProfile();
+          })}
+          <View style={[styles.divider, isDarkMode && {backgroundColor: '#333'}]} />
+          {renderOption('bell', 'Notifications', 'Manage alerts & reminders', () => setNotifyModal(true), unreadTasks.length)}
         </View>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Preferences & Support</Text>
-        <View style={styles.card}>
-          {renderOption('moon', 'Theme', 'System default')}
-          <View style={styles.divider} />
-          {renderOption('help-circle', 'Help & Support', 'FAQs and contact info')}
+        <View style={dynamicCard}>
+          {renderOption(isDarkMode ? 'sun' : 'moon', 'Theme', isDarkMode ? 'Dark Mode Active' : 'Light Mode Active', () => setIsDarkMode(!isDarkMode))}
+          <View style={[styles.divider, isDarkMode && {backgroundColor: '#333'}]} />
+          {renderOption('help-circle', 'Help & Support', 'FAQs and contact info', () => Linking.openURL('tel:+919651111303'))}
         </View>
       </View>
 
@@ -107,6 +134,83 @@ export default function ProfileScreen() {
       </TouchableOpacity>
       
       <Text style={styles.versionText}>TaskFlow App Version 1.0.0</Text>
+
+      {/* Account Details Modal */}
+      <Modal visible={accountModal} animationType="slide" presentationStyle="pageSheet">
+        <View style={[styles.modalContainer, isDarkMode && {backgroundColor: '#121212'}]}>
+          <View style={[styles.modalHeader, isDarkMode && {backgroundColor: '#1E1E1E', borderBottomColor: '#333'}]}>
+            <Text style={[styles.modalTitle, dynamicText]}>Account Details</Text>
+            <TouchableOpacity onPress={() => setAccountModal(false)}>
+              <Feather name="x" size={24} color={isDarkMode ? '#fff' : colors.text} />
+            </TouchableOpacity>
+          </View>
+          <ScrollView contentContainerStyle={{padding: 20}}>
+            {isLoading ? (
+              <ActivityIndicator size="large" color={colors.primary} style={{marginTop: 50}} />
+            ) : (
+              <>
+                <View style={styles.detailBox}>
+                  <Text style={styles.detailLabel}>Full Name</Text>
+                  <Text style={[styles.detailValue, dynamicText]}>{user?.name || 'N/A'}</Text>
+                </View>
+                <View style={styles.detailBox}>
+                  <Text style={styles.detailLabel}>Email Address</Text>
+                  <Text style={[styles.detailValue, dynamicText]}>{user?.email}</Text>
+                </View>
+                <View style={styles.detailBox}>
+                  <Text style={styles.detailLabel}>Role</Text>
+                  <Text style={[styles.detailValue, dynamicText, {textTransform: 'capitalize'}]}>{user?.role?.replace('_', ' ')}</Text>
+                </View>
+                <View style={styles.detailBox}>
+                  <Text style={styles.detailLabel}>Phone</Text>
+                  <Text style={[styles.detailValue, dynamicText]}>{user?.phone || 'Not provided'}</Text>
+                </View>
+                <View style={styles.detailBox}>
+                  <Text style={styles.detailLabel}>Age</Text>
+                  <Text style={[styles.detailValue, dynamicText]}>{user?.age || 'Not provided'}</Text>
+                </View>
+                <View style={styles.detailBox}>
+                  <Text style={styles.detailLabel}>Salary</Text>
+                  <Text style={[styles.detailValue, dynamicText]}>{user?.salary ? `₹${user.salary}` : 'Not provided'}</Text>
+                </View>
+                <View style={styles.detailBox}>
+                  <Text style={styles.detailLabel}>Address</Text>
+                  <Text style={[styles.detailValue, dynamicText]}>{user?.address || 'Not provided'}</Text>
+                </View>
+              </>
+            )}
+          </ScrollView>
+        </View>
+      </Modal>
+
+      {/* Notifications Modal */}
+      <Modal visible={notifyModal} animationType="slide" presentationStyle="pageSheet">
+        <View style={[styles.modalContainer, isDarkMode && {backgroundColor: '#121212'}]}>
+          <View style={[styles.modalHeader, isDarkMode && {backgroundColor: '#1E1E1E', borderBottomColor: '#333'}]}>
+            <Text style={[styles.modalTitle, dynamicText]}>Notifications</Text>
+            <TouchableOpacity onPress={() => setNotifyModal(false)}>
+              <Feather name="x" size={24} color={isDarkMode ? '#fff' : colors.text} />
+            </TouchableOpacity>
+          </View>
+          <ScrollView contentContainerStyle={{padding: 20}}>
+            {unreadTasks.length === 0 ? (
+              <Text style={{textAlign: 'center', marginTop: 40, color: colors.textLight}}>No new notifications.</Text>
+            ) : (
+              unreadTasks.map((t, idx) => (
+                <View key={idx} style={[styles.notifyCard, isDarkMode && {backgroundColor: '#1E1E1E', borderColor: '#333'}]}>
+                  <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 8}}>
+                    <Feather name="alert-circle" size={16} color={colors.primary} style={{marginRight: 8}} />
+                    <Text style={{fontWeight: 'bold', color: isDarkMode ? '#FFF' : colors.text}}>New Task Assigned</Text>
+                  </View>
+                  <Text style={{color: isDarkMode ? '#CCC' : colors.text, marginBottom: 4}}>{t.details?.taskAssigned}</Text>
+                  <Text style={{color: colors.textLight, fontSize: 12}}>{t.date}</Text>
+                </View>
+              ))
+            )}
+          </ScrollView>
+        </View>
+      </Modal>
+
     </ScrollView>
   );
 }
@@ -135,5 +239,14 @@ const styles = StyleSheet.create({
   
   logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FEF2F2', marginHorizontal: 20, marginTop: 30, paddingVertical: 16, borderRadius: 12, borderWidth: 1, borderColor: '#FCA5A5', gap: 10 },
   logoutBtnText: { color: '#EF4444', fontWeight: '700', fontSize: 15 },
-  versionText: { textAlign: 'center', marginTop: 20, fontSize: 12, color: colors.textLight, fontWeight: '500' }
+  versionText: { textAlign: 'center', marginTop: 20, fontSize: 12, color: colors.textLight, fontWeight: '500' },
+  
+  modalContainer: { flex: 1, backgroundColor: colors.background },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, backgroundColor: colors.card, borderBottomWidth: 1, borderBottomColor: colors.border },
+  modalTitle: { fontSize: 18, fontWeight: '800', color: colors.text },
+  detailBox: { marginBottom: 20, paddingBottom: 15, borderBottomWidth: 1, borderBottomColor: colors.border },
+  detailLabel: { fontSize: 12, color: colors.textLight, fontWeight: '700', textTransform: 'uppercase', marginBottom: 4 },
+  detailValue: { fontSize: 16, fontWeight: '600', color: colors.text },
+  
+  notifyCard: { backgroundColor: colors.card, padding: 16, borderRadius: 12, borderWidth: 1, borderColor: colors.border, marginBottom: 12 }
 });

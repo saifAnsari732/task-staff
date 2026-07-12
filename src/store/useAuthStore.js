@@ -35,6 +35,24 @@ const useAuthStore = create((set) => ({
 
   logout: () => set({ user: null, role: null, token: null, error: null }),
 
+  fetchProfile: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const token = useAuthStore.getState().token;
+      const response = await axios.get(`${API_URL}/users/me`, {
+        headers: { 'x-auth-token': token }
+      });
+      set({ user: response.data, isLoading: false });
+      return true;
+    } catch (error) {
+      set({ 
+        isLoading: false, 
+        error: error.response?.data?.error || 'Failed to fetch profile'
+      });
+      return false;
+    }
+  },
+
   updateProfilePic: async (uri) => {
     set({ isLoading: true, error: null });
     try {
