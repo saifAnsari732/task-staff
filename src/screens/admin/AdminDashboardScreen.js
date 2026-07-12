@@ -24,17 +24,17 @@ export default function AdminDashboardScreen({ navigation }) {
         headers: { 'x-auth-token': token }
       });
       
-      // Filter out admins and keep only 1 user per role to match the 4 specific users
-      const staffList = response.data.filter(u => u.role !== 'admin');
-      const uniqueByRole = {};
-      staffList.forEach(user => {
-         // Keep the latest or first found user for each role
-         if (!uniqueByRole[user.role]) {
-             uniqueByRole[user.role] = user;
-         }
-      });
+      // Filter to show ONLY the 4 specific test users requested
+      const targetEmails = [
+        'telecaller@company.com',
+        'video@company.com',
+        'social@company.com',
+        'developer@company.com'
+      ];
       
-      setEmployees(Object.values(uniqueByRole));
+      const staffList = response.data.filter(u => targetEmails.includes(u.email));
+      
+      setEmployees(staffList);
     } catch (error) {
       console.error('Error fetching employees:', error);
     }

@@ -40,15 +40,16 @@ export default function ManageEmployeesScreen() {
         headers: { 'x-auth-token': token }
       });
       
-      const staffList = response.data.filter(u => u.role !== 'admin');
-      const uniqueByRole = {};
-      staffList.forEach(user => {
-         if (!uniqueByRole[user.role]) {
-             uniqueByRole[user.role] = user;
-         }
-      });
+      const targetEmails = [
+        'telecaller@company.com',
+        'video@company.com',
+        'social@company.com',
+        'developer@company.com'
+      ];
       
-      setEmployees(Object.values(uniqueByRole));
+      const staffList = response.data.filter(u => targetEmails.includes(u.email));
+      
+      setEmployees(staffList);
     } catch (error) {
       console.error(error);
       Alert.alert('Error', 'Failed to fetch employees');
