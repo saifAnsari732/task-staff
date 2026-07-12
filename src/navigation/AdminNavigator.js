@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, Image } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Feather } from '@expo/vector-icons';
@@ -15,13 +15,23 @@ const ProfileAvatar = () => {
   const { user, role } = useAuthStore();
   const bg = colors.roles[role]?.accent || colors.roles[role]?.text || colors.primary;
   return (
-    <View style={{ marginRight: 15, width: 36, height: 36, borderRadius: 18, backgroundColor: bg, justifyContent: 'center', alignItems: 'center' }}>
-      <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>{user?.name?.charAt(0) || 'U'}</Text>
+    <View style={{ marginRight: 15, width: 36, height: 36, borderRadius: 18, backgroundColor: bg, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
+      {user?.profilePic ? (
+        <Image source={{ uri: user.profilePic }} style={{ width: 36, height: 36 }} />
+      ) : (
+        <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>{user?.name?.charAt(0) || 'U'}</Text>
+      )}
     </View>
   );
 };
 
 export default function AdminNavigator() {
+  const fetchProfile = useAuthStore(state => state.fetchProfile);
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -55,7 +65,7 @@ export default function AdminNavigator() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textLight,
         tabBarStyle: { 
-          height: 70,
+          height: 99,
           paddingBottom: 15,
           paddingTop: 10,
           elevation: 8,
