@@ -56,7 +56,7 @@ export default function StaffNavigator() {
         tabBarInactiveTintColor: colors.textLight,
         tabBarStyle: { 
           position: 'absolute',
-          bottom: 15,
+          bottom: 30,
           left: 15,
           right: 15,
           backgroundColor: '#fff',
