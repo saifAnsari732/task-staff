@@ -54,7 +54,23 @@ export default function AdminNavigator() {
         },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textLight,
-        tabBarStyle: { paddingBottom: 5, paddingTop: 5, height: 60, elevation: 8 }
+        tabBarStyle: { 
+          position: 'absolute',
+          bottom: 15,
+          left: 15,
+          right: 15,
+          backgroundColor: '#fff',
+          borderRadius: 15,
+          height: 60,
+          paddingBottom: 5,
+          paddingTop: 5,
+          elevation: 10,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          borderTopWidth: 0
+        }
       })}
     >
       <Tab.Screen name="Home" component={AdminDashboardScreen} />
