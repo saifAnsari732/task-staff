@@ -8,7 +8,7 @@ import useAuthStore from '../../store/useAuthStore';
 import useTaskStore from '../../store/useTaskStore';
 
 // Assuming your backend URL from useAuthStore
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://task-staff.onrender.com/api';
 
 export default function ManageEmployeesScreen() {
   const { token } = useAuthStore();
@@ -18,6 +18,7 @@ export default function ManageEmployeesScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [editingUserId, setEditingUserId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   
   // Form State
@@ -52,7 +53,46 @@ export default function ManageEmployeesScreen() {
     fetchTasks();
   }, []);
 
-  const handleAddUser = async () => {
+  const handleEditPress = (employee) => {
+    setEditingUserId(employee._id);
+    setFormData({
+      name: employee.name || '',
+      email: employee.email || '',
+      password: '',
+      role: employee.role || 'developer',
+      age: employee.age?.toString() || '',
+      salary: employee.salary?.toString() || '',
+      phone: employee.phone || '',
+      address: employee.address || ''
+    });
+    setModalVisible(true);
+  };
+
+  const handleDeletePress = (employee) => {
+    Alert.alert(
+      'Delete Employee',
+      `Are you sure you want to delete ${employee.name || employee.email}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => deleteEmployee(employee._id) }
+      ]
+    );
+  };
+
+  const deleteEmployee = async (id) => {
+    try {
+      await axios.delete(`${API_URL}/users/${id}`, {
+        headers: { 'x-auth-token': token }
+      });
+      fetchEmployees();
+      Alert.alert('Success', 'Employee deleted successfully');
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Failed to delete employee');
+    }
+  };
+
+  const handleSubmitUser = async () => {
     if (!formData.email || !formData.role) {
       Alert.alert('Error', 'Email and Role are required.');
       return;
@@ -60,16 +100,24 @@ export default function ManageEmployeesScreen() {
 
     setSubmitting(true);
     try {
-      await axios.post(`${API_URL}/users`, formData, {
-        headers: { 'x-auth-token': token }
-      });
-      Alert.alert('Success', 'Employee added successfully!');
+      if (editingUserId) {
+        await axios.put(`${API_URL}/users/${editingUserId}`, formData, {
+          headers: { 'x-auth-token': token }
+        });
+        Alert.alert('Success', 'Employee updated successfully!');
+      } else {
+        await axios.post(`${API_URL}/users`, formData, {
+          headers: { 'x-auth-token': token }
+        });
+        Alert.alert('Success', 'Employee added successfully!');
+      }
       setModalVisible(false);
+      setEditingUserId(null);
       setFormData({ name: '', email: '', password: '', role: 'developer', age: '', salary: '', phone: '', address: '' });
       fetchEmployees();
     } catch (error) {
       console.error(error);
-      Alert.alert('Error', error.response?.data?.error || 'Failed to add employee');
+      Alert.alert('Error', error.response?.data?.error || 'Failed to save employee');
     } finally {
       setSubmitting(false);
     }
@@ -83,7 +131,11 @@ export default function ManageEmployeesScreen() {
     <View style={styles.container}>
       <View style={styles.headerRow}>
         <Text style={styles.header}>Employees</Text>
-        <TouchableOpacity style={styles.addBtn} onPress={() => setModalVisible(true)}>
+        <TouchableOpacity style={styles.addBtn} onPress={() => {
+          setEditingUserId(null);
+          setFormData({ name: '', email: '', password: '', role: 'developer', age: '', salary: '', phone: '', address: '' });
+          setModalVisible(true);
+        }}>
           <Feather name="plus" size={16} color={colors.card} />
           <Text style={styles.addBtnText}>Add New</Text>
         </TouchableOpacity>
@@ -125,9 +177,14 @@ export default function ManageEmployeesScreen() {
                       ) : null}
                     </View>
                   </View>
-                  <TouchableOpacity style={styles.editBtn}>
-                    <Text style={styles.editBtnText}>Edit</Text>
-                  </TouchableOpacity>
+                  <View style={{flexDirection: 'row', gap: 8, alignItems: 'center'}}>
+                    <TouchableOpacity style={styles.editBtn} onPress={() => handleEditPress(item)}>
+                      <Text style={styles.editBtnText}>Edit</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.editBtn, {borderColor: colors.error, paddingHorizontal: 8}]} onPress={() => handleDeletePress(item)}>
+                      <Feather name="trash-2" size={14} color={colors.error} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </TouchableOpacity>
             );
@@ -140,7 +197,7 @@ export default function ManageEmployeesScreen() {
       <Modal visible={modalVisible} animationType="slide" presentationStyle="pageSheet">
         <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Add New Employee</Text>
+            <Text style={styles.modalTitle}>{editingUserId ? 'Edit Employee' : 'Add New Employee'}</Text>
             <TouchableOpacity onPress={() => setModalVisible(false)}>
               <Feather name="x" size={24} color={colors.text} />
             </TouchableOpacity>
@@ -184,8 +241,8 @@ export default function ManageEmployeesScreen() {
             <Text style={styles.label}>Address</Text>
             <TextInput style={[styles.input, {height: 80, textAlignVertical: 'top'}]} placeholder="Full residential address" multiline value={formData.address} onChangeText={t => setFormData({...formData, address: t})} />
 
-            <TouchableOpacity style={styles.submitBtn} onPress={handleAddUser} disabled={submitting}>
-              {submitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitBtnText}>Create Employee</Text>}
+            <TouchableOpacity style={styles.submitBtn} onPress={handleSubmitUser} disabled={submitting}>
+              {submitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitBtnText}>{editingUserId ? 'Update Employee' : 'Create Employee'}</Text>}
             </TouchableOpacity>
           </ScrollView>
         </View>

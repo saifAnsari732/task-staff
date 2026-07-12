@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
 import useAuthStore from '../../store/useAuthStore';
 import { colors } from '../../theme/colors';
@@ -29,9 +29,9 @@ export default function LoginScreen() {
         {/* Header Section */}
         <View style={styles.header}>
           <View style={styles.logoBox}>
-            <MaterialIcons name="grid-view" size={32} color={colors.card} />
+            <Image source={require('../../assets/logo.png')} style={{width: 140, height: 140}} resizeMode="contain" />
           </View>
-          <Text style={styles.appName}>TaskFlow</Text>
+          <Text style={styles.appName}>digiStaff</Text>
           <Text style={styles.tagline}>Enterprise Orchestration System</Text>
         </View>
 
@@ -75,9 +75,15 @@ export default function LoginScreen() {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.signInBtn} onPress={() => handleLogin()}>
-            <Text style={styles.signInBtnText}>Sign In</Text>
-            <MaterialIcons name="login" size={20} color={colors.card} style={{ marginLeft: 8 }} />
+          <TouchableOpacity style={styles.signInBtn} onPress={() => handleLogin()} disabled={isLoading}>
+            {isLoading ? (
+              <ActivityIndicator color={colors.card} />
+            ) : (
+              <>
+                <Text style={styles.signInBtnText}>Sign In</Text>
+                <MaterialIcons name="login" size={20} color={colors.card} style={{ marginLeft: 8 }} />
+              </>
+            )}
           </TouchableOpacity>
 
           {/* Info Box */}
@@ -115,8 +121,8 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   scrollContent: { padding: 20, flexGrow: 1, justifyContent: 'center' },
-  header: { alignItems: 'center', marginBottom: 30, marginTop: 40 },
-  logoBox: { backgroundColor: colors.primary, padding: 12, borderRadius: 12, marginBottom: 16, elevation: 4 },
+  header: { alignItems: 'center', marginBottom: 20, marginTop: 40 },
+  logoBox: { marginBottom: -15, alignItems: 'center', justifyContent: 'center' },
   appName: { fontSize: 28, fontWeight: '800', color: colors.text, marginBottom: 6 },
   tagline: { fontSize: 14, color: colors.textLight },
   card: { backgroundColor: colors.card, padding: 24, borderRadius: 16, borderWidth: 1, borderColor: colors.border, elevation: 1 },

@@ -227,6 +227,61 @@ app.post('/api/users', auth, async (req, res) => {
   }
 });
 
+// Admin: Update User
+app.put('/api/users/:id', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Access denied. Admin only.' });
+    }
+
+    const { email, password, role, name, age, salary, phone, address } = req.body;
+    let user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (email) user.email = email;
+    if (role) user.role = role;
+    if (name !== undefined) user.name = name;
+    if (age !== undefined) user.age = age;
+    if (salary !== undefined) user.salary = salary;
+    if (phone !== undefined) user.phone = phone;
+    if (address !== undefined) user.address = address;
+
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt);
+    }
+
+    await user.save();
+    const updatedUser = await User.findById(user._id).select('-password');
+    res.json(updatedUser);
+  } catch (err) {
+    console.error('Error updating user:', err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// Admin: Delete User
+app.delete('/api/users/:id', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Access denied. Admin only.' });
+    }
+    
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ message: 'User deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting user:', err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 // Admin: Assign Tasks (Bulk or Single)
 app.post('/api/admin/assign-tasks', auth, async (req, res) => {
   try {

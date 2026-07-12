@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import axios from 'axios';
 import useAuthStore from './useAuthStore';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://task-staff.onrender.com/api';
 
 const useTaskStore = create((set, get) => ({
   tasks: [],

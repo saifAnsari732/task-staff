@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "office-staff-App",
+    "name": "digiStaff",
     "slug": "office-staff-App",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,10 +15,21 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
-      }
+      },
+      "package": "com.saifuddinansari.officestaffApp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "2.0.0"
+          }
+        }
+      ]
+    ]
   }
 }

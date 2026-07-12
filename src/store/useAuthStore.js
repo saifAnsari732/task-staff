@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import axios from 'axios';
 
 // IMPORTANT: Use localhost for web, or your PC's local IP (e.g., 192.168.1.5) for mobile device testing
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://task-staff.onrender.com/api';
 
 const useAuthStore = create((set) => ({
   user: null,

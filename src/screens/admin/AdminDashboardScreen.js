@@ -6,7 +6,7 @@ import { colors } from '../../theme/colors';
 import useAuthStore from '../../store/useAuthStore';
 import useTaskStore from '../../store/useTaskStore';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://task-staff.onrender.com/api';
 
 export default function AdminDashboardScreen({ navigation }) {
   const { user, token } = useAuthStore();

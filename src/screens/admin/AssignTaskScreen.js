@@ -5,7 +5,7 @@ import axios from 'axios';
 import { colors } from '../../theme/colors';
 import useAuthStore from '../../store/useAuthStore';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://task-staff.onrender.com/api';
 
 export default function AssignTaskScreen({ navigation }) {
   const { token } = useAuthStore();

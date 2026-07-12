@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, Image, ActivityIndicator } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { colors } from '../../theme/colors';
 
@@ -35,10 +35,11 @@ export default function SplashScreen({ navigation }) {
     <View style={styles.container}>
       <Animated.View style={[styles.content, { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }]}>
         <View style={styles.logoBox}>
-          <MaterialIcons name="grid-view" size={56} color={colors.primary} />
+          <Image source={require('../../assets/logo.png')} style={{width: 200, height: 200}} resizeMode="contain" />
         </View>
-        <Text style={styles.appName}>TaskFlow</Text>
+        <Text style={styles.appName}>digiStaff</Text>
         <Text style={styles.tagline}>Enterprise Orchestration</Text>
+        <ActivityIndicator size="large" color={colors.card} style={{ marginTop: 30 }} />
       </Animated.View>
     </View>
   );
@@ -55,15 +56,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoBox: {
-    backgroundColor: colors.card,
-    padding: 20,
-    borderRadius: 24,
-    marginBottom: 24,
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
+    marginBottom: -15,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   appName: {
     fontSize: 42,
