@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView, Platform } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import { colors } from '../theme/colors';
 
@@ -51,37 +52,34 @@ export default function DynamicTaskForm({ schema, onSubmit, isLoading }) {
         <View key={field.name} style={styles.fieldContainer}>
           <Text style={styles.label}>{field.label} {field.required && '*'}</Text>
           {field.type === 'select' ? (
-            <View style={styles.selectContainer}>
-              {/* Note: Simplified Select for MVP. In a real app, use a Picker component. */}
-              {field.options.map(opt => (
-                <TouchableOpacity 
-                  key={opt}
-                  style={[styles.selectOption, formData[field.name] === opt && styles.selectOptionActive]}
-                  onPress={() => handleChange(field.name, opt)}
-                >
-                  <Text style={[styles.selectOptionText, formData[field.name] === opt && styles.selectOptionTextActive]}>
-                    {opt}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+            <View style={[styles.input, { padding: 0, justifyContent: 'center', height: Platform.OS === 'ios' ? undefined : 46 }]}>
+              <Picker
+                selectedValue={formData[field.name]}
+                onValueChange={(val) => handleChange(field.name, val)}
+                style={{ height: Platform.OS === 'ios' ? 120 : 46 }}
+              >
+                <Picker.Item label={`Select ${field.label}`} value="" color="#999" />
+                {field.options.map(opt => (
+                  <Picker.Item key={opt} label={opt} value={opt} />
+                ))}
+              </Picker>
             </View>
           ) : field.type === 'platform-metric' ? (
             <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap: 8}}>
-                {field.options.map(opt => (
-                  <TouchableOpacity 
-                    key={opt}
-                    style={[styles.selectOption, formData[`${field.name}Channel`] === opt && styles.selectOptionActive, {paddingVertical: 8, paddingHorizontal: 12}]}
-                    onPress={() => handleChange(`${field.name}Channel`, opt)}
-                  >
-                    <Text style={[styles.selectOptionText, formData[`${field.name}Channel`] === opt && styles.selectOptionTextActive, {fontSize: 12}]}>
-                      {opt}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
+              <View style={[styles.input, { flex: 1, padding: 0, justifyContent: 'center', height: Platform.OS === 'ios' ? undefined : 46 }]}>
+                <Picker
+                  selectedValue={formData[`${field.name}Channel`]}
+                  onValueChange={(val) => handleChange(`${field.name}Channel`, val)}
+                  style={{ height: Platform.OS === 'ios' ? 120 : 46 }}
+                >
+                  <Picker.Item label={`Select Channel`} value="" color="#999" />
+                  {field.options.map(opt => (
+                    <Picker.Item key={opt} label={opt} value={opt} />
+                  ))}
+                </Picker>
+              </View>
               <TextInput
-                style={[styles.input, {width: 80, height: 40, padding: 8, textAlign: 'center'}]}
+                style={[styles.input, {width: 100, height: Platform.OS === 'ios' ? 46 : 46, padding: 8, textAlign: 'center'}]}
                 value={formData[`${field.name}Count`] || ''}
                 onChangeText={(val) => handleChange(`${field.name}Count`, val)}
                 keyboardType="numeric"
