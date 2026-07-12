@@ -56,7 +56,7 @@ export default function DynamicTaskForm({ schema, onSubmit, isLoading }) {
               <Picker
                 selectedValue={formData[field.name]}
                 onValueChange={(val) => handleChange(field.name, val)}
-                style={{ height: Platform.OS === 'ios' ? 120 : 46 }}
+                style={{ height: Platform.OS === 'ios' ? 120 : 53 }}
               >
                 <Picker.Item label={`Select ${field.label}`} value="" color="#999" />
                 {field.options.map(opt => (
@@ -70,7 +70,7 @@ export default function DynamicTaskForm({ schema, onSubmit, isLoading }) {
                 <Picker
                   selectedValue={formData[`${field.name}Channel`]}
                   onValueChange={(val) => handleChange(`${field.name}Channel`, val)}
-                  style={{ height: Platform.OS === 'ios' ? 120 : 46 }}
+                  style={{ height: Platform.OS === 'ios' ? 120 : 50 }}
                 >
                   <Picker.Item label={`Select Channel`} value="" color="#999" />
                   {field.options.map(opt => (
@@ -79,7 +79,7 @@ export default function DynamicTaskForm({ schema, onSubmit, isLoading }) {
                 </Picker>
               </View>
               <TextInput
-                style={[styles.input, {width: 100, height: Platform.OS === 'ios' ? 46 : 46, padding: 8, textAlign: 'center'}]}
+                style={[styles.input, {width: 100, height: Platform.OS === 'ios' ? 46 : 50, padding: 8, textAlign: 'center'}]}
                 value={formData[`${field.name}Count`] || ''}
                 onChangeText={(val) => handleChange(`${field.name}Count`, val)}
                 keyboardType="numeric"
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   selectOption: {
-    paddingVertical: 6,
+    paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 16,
     borderWidth: 1,

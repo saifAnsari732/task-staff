@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TextInput, ScrollView, ActivityIndicator, Alert, Image } from 'react-native';
+import { Video } from 'expo-av';
 import { Feather } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
@@ -342,10 +343,20 @@ export default function ManageEmployeesScreen() {
                           )}
                         </View>
                         
-                        {(task.screenshotUrl || task.details?.videoFile || task.details?.screenshotUrl) && (
-                            <Text style={{color: roleTheme.text, fontSize: 12, marginTop: 8, fontWeight: '700'}}>
-                              <Feather name="paperclip" size={12} /> View Attachment
-                            </Text>
+                        {(task.screenshotUrl || task.details?.screenshotUrl) && (
+                          <View style={{ marginTop: 12, borderRadius: 8, overflow: 'hidden', height: 100, width: 150, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border }}>
+                            <Image source={{ uri: task.screenshotUrl || task.details?.screenshotUrl }} style={{ width: '100%', height: '100%', resizeMode: 'cover' }} />
+                          </View>
+                        )}
+                        {task.details?.videoFile && (
+                          <View style={{ marginTop: 12, borderRadius: 8, overflow: 'hidden', height: 100, width: 150, backgroundColor: '#000' }}>
+                            <Video 
+                              source={{ uri: task.details.videoFile }}
+                              style={{ width: '100%', height: '100%' }}
+                              useNativeControls
+                              resizeMode="cover"
+                            />
+                          </View>
                         )}
                       </View>
                     );

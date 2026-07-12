@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
+import { Video } from 'expo-av';
 import { Feather } from '@expo/vector-icons';
 import { colors } from '../../theme/colors';
 import useTaskStore from '../../store/useTaskStore';
@@ -125,22 +126,19 @@ export default function TaskHistoryScreen() {
                 )}
 
                 {(item.screenshotUrl || item.details?.screenshotUrl) && (
-                  <View style={styles.imageContainer}>
-                    <Image source={{ uri: item.screenshotUrl || item.details?.screenshotUrl }} style={styles.screenshot} />
-                    <TouchableOpacity style={styles.imageOverlay}>
-                      <Feather name="image" size={14} color="#fff" />
-                      <Text style={styles.imageOverlayText}>View Attachment</Text>
-                    </TouchableOpacity>
+                  <View style={{ marginTop: 12, borderRadius: 8, overflow: 'hidden', height: 100, width: 150, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border }}>
+                    <Image source={{ uri: item.screenshotUrl || item.details?.screenshotUrl }} style={{ width: '100%', height: '100%', resizeMode: 'cover' }} />
                   </View>
                 )}
                 
                 {item.details?.videoFile && (
-                  <View style={[styles.imageContainer, {backgroundColor: '#000', justifyContent: 'center', alignItems: 'center'}]}>
-                    <Feather name="play-circle" size={48} color="#fff" style={{opacity: 0.8}} />
-                    <TouchableOpacity style={styles.imageOverlay}>
-                      <Feather name="video" size={14} color="#fff" />
-                      <Text style={styles.imageOverlayText}>View Video</Text>
-                    </TouchableOpacity>
+                  <View style={{ marginTop: 12, borderRadius: 8, overflow: 'hidden', height: 100, width: 150, backgroundColor: '#000' }}>
+                    <Video 
+                      source={{ uri: item.details.videoFile }}
+                      style={{ width: '100%', height: '100%' }}
+                      useNativeControls
+                      resizeMode="cover"
+                    />
                   </View>
                 )}
               </View>
